@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>harmonyX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-right">
+
+    <!-- Script block for all JavaScript logic -->
+    <script type="module">
+        // Function to sanitize user input to prevent XSS attacks
+        function sanitizeInput(input) {
+            const tempDiv = document.createElement('div');
+            tempDiv.textContent = input;
+            return tempDiv.innerHTML;
+        }
+
+        const products = [
+            {
+                id: '1',
+                name: 'اسم المنتج الأول',
+                price: 15.500,
+                description: 'وصف قصير للمنتج. يتميز هذا المنتج بالجودة العالية والأداء الممتاز.',
+                image: 'https://placehold.co/600x400/22c55e/ffffff?text=Product',
+                rating: 4.5
+            },
+            {
+                id: '2',
+                name: 'اسم المنتج الثاني',
+                price: 35.000,
+                description: 'وصف مميز لهذا المنتج. جودة عالية وتصميم عصري يناسب كل الأذواق.',
+                image: 'https://placehold.co/600x400/1e88e5/ffffff?text=Item',
+                rating: 5
+            },
+            {
+                id: '3',
+                name: 'اسم المنتج الثالث',
+                price: 10.250,
+                description: 'هذا المنتج مثالي للمنزل أو المكتب. يتميز بالمتانة والتصميم الأنيق.',
+                image: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Accessory',
+                rating: 3.5
+            },
+            {
+                id: '4',
+                name: 'سماعات رأس لاسلكية',
+                price: 49.990,
+                description: 'صوت عالي الجودة وتصميم مريح، مثالي للاستخدام اليومي.',
+                image: 'https://placehold.co/600x400/ef4444/ffffff?text=Headphones',
+                rating: 4.8
+            },
+            {
+                id: '5',
+                name: 'ساعة ذكية مقاومة للماء',
+                price: 79.950,
+                description: 'تتبع نشاطك البدني، إشعارات، وبطارية تدوم طويلاً.',
+                image: 'https://placehold.co/600x400/3b82f6/ffffff?text=Smart+Watch',
+                rating: 4.2
+            },
+            {
+                id: '6',
+                name: 'حقيبة ظهر عصرية',
+                price: 22.000,
+                description: 'تصميم أنيق ومساحة واسعة لجميع أغراضك اليومية.',
+                image: 'https://placehold.co/600x400/94a3b8/ffffff?text=Backpack',
+                rating: 4.0
+            },
+            {
+                id: '7',
+                name: 'لابتوب محمول',
+                price: 350.500,
+                description: 'لابتوب خفيف الوزن ومناسب للعمل والدراسة، بأداء قوي وشاشة عالية الدقة.',
+                image: 'https://placehold.co/600x400/111827/ffffff?text=Laptop',
+                rating: 4.7
+            },
+            {
+                id: '8',
+                name: 'كاميرا رقمية احترافية',
+                price: 280.000,
+                description: 'كاميرا مثالية للمصورين، مع عدسة قابلة للتغيير وفيديو بجودة 4K.',
+                image: 'https://placehold.co/600x400/4b5563/ffffff?text=Camera',
+                rating: 4.9
+            },
+            {
+                id: '9',
+                name: 'مجموعة أدوات منزلية',
+                price: 18.750,
+                description: 'مجموعة متكاملة من الأدوات الأساسية لكل منزل، مصنوعة من مواد متينة.',
+                image: 'https://placehold.co/600x400/6b7280/ffffff?text=Tools',
+                rating: 4.1
+            },
+            {
+                id: '10',
+                name: 'جهاز عرض صغير (بروجيكتور)',
+                price: 65.500,
+                description: 'بروجيكتور صغير الحجم وعالي الجودة، مناسب للعروض التقديمية والأفلام.',
+                image: 'https://placehold.co/600x400/9ca3af/ffffff?text=Projector',
+                rating: 4.6
+            }
+        ];
+        
+        let cartItems = [];
+        let currentProduct = null;
+
+        function getStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let starsHtml = '';
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += `<svg class="h-5 w-5 text-yellow-400 fill-current" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`;
+            }
+            if (hasHalfStar) {
+                starsHtml += `<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M5.055 7.027A1 1 0 015 7h4.049l1.07-3.292a1 1 0 011.902 0l1.07 3.292H19a1 1 0 01.588 1.81l-2.8 2.034a1 1 0 01-.364 1.118l1.07 3.292a1 1 0 01-1.54 1.118l-2.8-2.034a1 1 0 01-1.175 0l-2.8 2.034a1 1 0 01-1.54-1.118l1.07-3.292a1 1 0 01-.364-1.118L2.98 8.72a1 1 0 01.588-1.81H5.055z" fill-rule="evenodd" clip-rule="evenodd" /></svg>`;
+            }
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHtml += `<svg class="h-5 w-5 text-gray-300 fill-current" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`;
+            }
+            return starsHtml;
+        }
+
+        // Function to update the cart count to show the total number of items
+        function updateCartCount() {
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = totalItems;
+        }
+
+        function renderProducts() {
+            const productGrid = document.getElementById('product-grid');
+            productGrid.innerHTML = '';
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'bg-white rounded-3xl shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-300';
+                productCard.setAttribute('data-product-id', product.id);
+                
+                productCard.innerHTML = `
+                    <div class="cursor-pointer" data-view-product-id="${product.id}">
+                        <img src="${sanitizeInput(product.image)}" alt="صورة المنتج" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">${sanitizeInput(product.name)}</h3>
+                            <p class="text-gray-600 mb-4">${sanitizeInput(product.description)}</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-2xl font-bold text-green-600">د.ك ${product.price.toFixed(3)}</span>
+                                <div class="flex items-center">
+                                    ${getStarRating(product.rating)}
+                                    <span class="text-gray-500 text-sm mr-1">${product.rating.toFixed(1)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center justify-between">
+                        <!-- Quantity selector -->
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-gray-200 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center text-xl hover:bg-gray-300 transition duration-300 decrement-btn" data-product-id="${product.id}">
+                                -
+                            </button>
+                            <input type="number" value="1" min="1" max="100" class="w-12 text-center text-gray-800 border rounded-lg quantity-input" data-product-id="${product.id}">
+                            <button class="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl hover:bg-green-700 transition duration-300 increment-btn" data-product-id="${product.id}">
+                                +
+                            </button>
+                        </div>
+                        <button class="bg-green-600 text-white py-2 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition duration-300 add-to-cart-btn" data-product-id="${product.id}">
+                            إضافة
+                        </button>
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
+            });
+        }
+
+        function showProductDetails(productId) {
+            currentProduct = products.find(p => p.id === productId);
+            if (!currentProduct) return;
+            
+            const detailsView = document.getElementById('product-details');
+            detailsView.innerHTML = `
+                <div class="bg-white rounded-3xl shadow-lg overflow-hidden max-w-2xl mx-auto p-6 flex flex-col sm:flex-row gap-6">
+                    <img src="${sanitizeInput(currentProduct.image)}" alt="صورة ${sanitizeInput(currentProduct.name)}" class="w-full sm:w-1/2 rounded-xl object-cover">
+                    <div class="flex-1 space-y-4">
+                        <h2 class="text-3xl font-bold text-gray-800">${sanitizeInput(currentProduct.name)}</h2>
+                        
+                        <div class="flex items-center">
+                            <span class="text-gray-500 ml-2">تقييم:</span>
+                            <div class="flex items-center">
+                                ${getStarRating(currentProduct.rating)}
+                                <span class="text-gray-500 text-sm mr-1">${currentProduct.rating.toFixed(1)}</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-600 text-lg">${sanitizeInput(currentProduct.description)}</p>
+                        <span id="total-price-display" class="text-4xl font-bold text-green-600 block">د.ك ${currentProduct.price.toFixed(3)}</span>
+                        
+                        <!-- Quantity selector -->
+                        <div class="flex items-center justify-center space-x-4">
+                            <button id="decrement-btn" class="bg-gray-200 text-gray-600 rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-gray-300 transition duration-300">
+                                -
+                            </button>
+                            <span id="quantity-display" class="text-3xl font-bold w-12 text-center">1</span>
+                            <button id="increment-btn" class="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-green-700 transition duration-300">
+                                +
+                            </button>
+                        </div>
+
+                        <button class="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition duration-300 add-to-cart-details-btn" data-product-id="${currentProduct.id}">
+                            إضافة إلى السلة
+                        </button>
+                        <button class="w-full mt-4 text-gray-600 py-3 rounded-lg text-lg font-semibold border border-gray-300 hover:bg-gray-200 transition duration-300 back-to-home-btn">
+                            العودة إلى المنتجات
+                        </button>
+                    </div>
+                </div>
+            `;
+            showView('product');
+        }
+
+        function renderCart() {
+            const cartView = document.getElementById('cart-view');
+            let total = 0;
+            let cartContent = '';
+
+            if (cartItems.length === 0) {
+                cartContent = `<p class="text-center text-gray-500 text-xl font-bold my-12">السلة فارغة</p>`;
+            } else {
+                cartItems.forEach(item => {
+                    const product = products.find(p => p.id === item.id);
+                    if (product) {
+                        total += product.price * item.quantity;
+                        cartContent += `
+                            <div class="flex items-center justify-between border-b border-gray-200 py-4">
+                                <div class="flex items-center">
+                                    <img src="${sanitizeInput(product.image)}" alt="صورة ${sanitizeInput(product.name)}" class="h-16 w-16 object-cover rounded-lg ml-4">
+                                    <div>
+                                        <h4 class="text-lg font-semibold">${sanitizeInput(product.name)}</h4>
+                                        <p class="text-gray-500">الكمية: ${item.quantity}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-xl font-bold text-green-600 mr-4">د.ك ${(product.price * item.quantity).toFixed(3)}</span>
+                                    <button class="text-red-500 hover:text-red-700 remove-from-cart-btn" data-product-id="${item.id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            cartView.innerHTML = `
+                <div class="bg-white rounded-3xl shadow-lg p-6 max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">سلة التسوق</h2>
+                    ${cartContent}
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between font-bold text-xl">
+                            <span>المجموع الكلي:</span>
+                            <span class="text-green-600">د.ك ${total.toFixed(3)}</span>
+                        </div>
+                    </div>
+                    <button class="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition duration-300 mt-6">
+                        إتمام عملية الشراء
+                    </button>
+                    <button class="w-full mt-4 text-gray-600 py-3 rounded-lg text-lg font-semibold border border-gray-300 hover:bg-gray-200 transition duration-300 back-to-home-btn">
+                        متابعة التسوق
+                    </button>
+                </div>
+            `;
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification-box');
+            notification.innerText = message;
+            notification.classList.remove('hidden');
+            notification.classList.add('opacity-100');
+            setTimeout(() => {
+                notification.classList.remove('opacity-100');
+                notification.classList.add('opacity-0');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 500); 
+            }, 2000); 
+        }
+        
+        function addToCart(productId, quantity) {
+            const existingItem = cartItems.find(item => item.id === productId);
+            if (existingItem) {
+                // If item exists, add to its quantity
+                existingItem.quantity += quantity;
+            } else {
+                // If not, add new item to cart
+                cartItems.push({ id: productId, quantity: quantity });
+            }
+            updateCartCount();
+            showNotification('تم إضافة المنتج إلى السلة بنجاح!');
+            showView('cart');
+        }
+
+        function removeFromCart(productId) {
+            cartItems = cartItems.filter(item => item.id !== productId);
+            updateCartCount();
+            showView('cart');
+        }
+
+        function showView(viewName) {
+            document.body.dataset.view = viewName;
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('product-details').style.display = 'none';
+            document.getElementById('cart-view').style.display = 'none';
+            
+            if (viewName === 'home') {
+                document.getElementById('home-view').style.display = 'block';
+            } else if (viewName === 'product') {
+                document.getElementById('product-details').style.display = 'block';
+            } else if (viewName === 'cart') {
+                document.getElementById('cart-view').style.display = 'block';
+                renderCart();
+            }
+        }
+
+        // Event listeners to handle navigation and actions without inline 'onclick'
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('cart-btn').addEventListener('click', () => {
+                showView('cart');
+            });
+            
+            document.getElementById('product-grid').addEventListener('click', (e) => {
+                const productCard = e.target.closest('[data-view-product-id]');
+                const addToCartBtn = e.target.closest('.add-to-cart-btn');
+                const incrementBtn = e.target.closest('.increment-btn');
+                const decrementBtn = e.target.closest('.decrement-btn');
+
+                if (addToCartBtn) {
+                    const productId = addToCartBtn.getAttribute('data-product-id');
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    const quantity = parseInt(quantityInput.value) || 1;
+                    addToCart(productId, quantity);
+                } else if (incrementBtn) {
+                    const productId = incrementBtn.getAttribute('data-product-id');
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    let quantity = parseInt(quantityInput.value);
+                    if (quantity < 100) {
+                        quantityInput.value = quantity + 1;
+                    }
+                } else if (decrementBtn) {
+                    const productId = decrementBtn.getAttribute('data-product-id');
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    let quantity = parseInt(quantityInput.value);
+                    if (quantity > 1) {
+                        quantityInput.value = quantity - 1;
+                    }
+                } else if (productCard) {
+                    const productId = productCard.getAttribute('data-view-product-id');
+                    showProductDetails(productId);
+                }
+            });
+
+            document.getElementById('product-details').addEventListener('click', (e) => {
+                const quantityDisplay = document.getElementById('quantity-display');
+                const priceDisplay = document.getElementById('total-price-display');
+                
+                if (e.target.closest('#decrement-btn')) {
+                    let quantity = parseInt(quantityDisplay.innerText);
+                    if (quantity > 1) {
+                        quantity--;
+                        quantityDisplay.innerText = quantity;
+                        const newPrice = currentProduct.price * quantity;
+                        priceDisplay.innerText = `د.ك ${newPrice.toFixed(3)}`;
+                    }
+                } else if (e.target.closest('#increment-btn')) {
+                    let quantity = parseInt(quantityDisplay.innerText);
+                    if (quantity < 100) {
+                        quantity++;
+                        quantityDisplay.innerText = quantity;
+                        const newPrice = currentProduct.price * quantity;
+                        priceDisplay.innerText = `د.ك ${newPrice.toFixed(3)}`;
+                    }
+                } else if (e.target.closest('.add-to-cart-details-btn')) {
+                    const productId = e.target.closest('.add-to-cart-details-btn').getAttribute('data-product-id');
+                    const quantity = parseInt(quantityDisplay.innerText) || 1; // Ensure a valid number
+                    addToCart(productId, quantity);
+                } else if (e.target.classList.contains('back-to-home-btn')) {
+                    showView('home');
+                }
+            });
+
+            document.getElementById('cart-view').addEventListener('click', (e) => {
+                if (e.target.closest('.remove-from-cart-btn')) {
+                    const productId = e.target.closest('.remove-from-cart-btn').getAttribute('data-product-id');
+                    removeFromCart(productId);
+                } else if (e.target.classList.contains('back-to-home-btn')) {
+                    showView('home');
+                }
+            });
+            
+            // Initial app load
+            renderProducts();
+            showView('home');
+        });
+
+    </script>
+
+    <!-- UI Structure -->
+    <h1 title="the name" style="color: green; font-size: 3rem;" class="text-center"><i>harmonyX kuwait</i></h1>
+    <hr style="border-top: 5px solid green;">
+
+    <header class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between">
+            <h1 class="text-3xl font-bold text-green-600 mb-2 sm:mb-0">harmonyX كويت</h1>
+            <div class="flex items-center w-full sm:w-auto">
+                <input type="text" placeholder="بحث عن منتجات..." class="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+                <button class="bg-green-600 text-white px-4 py-2 rounded-lg mr-2 hover:bg-green-700 transition duration-300">
+                    بحث
+                </button>
+                <div id="cart-btn" class="relative cursor-pointer mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13v.832c0 .408.232.775.605.965l3.585 1.848m-.008.006A2 2 0 1115 17a2 2 0 01-2-2m-2 2a2 2 0 11-4 0 2 2 0 014 0m-2-2a2 2 0 11-4 0 2 2 0 014 0" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -left-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- Home View: Product Grid -->
+        <div id="home-view" style="display: none;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center sm:text-right">منتجاتنا</h2>
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Products will be rendered here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Single Product Details View -->
+        <div id="product-details" style="display: none;">
+            <!-- Product details will be rendered here by JavaScript -->
+        </div>
+
+        <!-- Shopping Cart View -->
+        <div id="cart-view" style="display: none;">
+            <!-- Cart items and total will be rendered here by JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Notification Message Box -->
+    <div id="notification-box" class="fixed bottom-8 right-8 bg-green-600 text-white py-3 px-6 rounded-lg shadow-xl hidden transition-opacity duration-500 text-sm md:text-base">
+        تم إضافة المنتج إلى السلة بنجاح!
+    </div>
+</body>
+</html>
